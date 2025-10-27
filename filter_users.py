@@ -1,48 +1,67 @@
 import json
 
 
-def filter_users_by_name(name):
-    with open("users.json", "r") as file:
-        users = json.load(file)
+def load_users():
+    """Load and return users from 'users.json'."""
 
-    filtered_users = [user for user in users if user["name"].lower() == name.lower()]
-
-    for user in filtered_users:
-        print(user)
+    with open("users.json", "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
-def filter_users_by_age(age):
-    with open("users.json", "r") as file:
-        users = json.load(file)
+def filter_by_name(users, name):
+    """Return users matching the given name (case-insensitive)."""
 
-    filtered_users = [user for user in users if user["age"] == age]
-
-    for user in filtered_users:
-        print(user)
+    return [user for user in users if user["name"].lower() == name.lower()]
 
 
-def filter_users_by_email(email):
-    with open("users.json", "r") as file:
-        users = json.load(file)
+def filter_by_age(users, age):
+    """Return users matching the given age."""
 
-    filtered_users = [user for user in users if user["email"] == email]
+    return [user for user in users if user["age"] == age]
 
-    for user in filtered_users:
-        print(user)
+
+def filter_by_email(users, email):
+    """Return users matching the given email (case-insensitive)."""
+
+    return [user for user in users if user["email"].lower() == email.lower()]
+
+
+def get_filter_value_and_result(users, option):
+    """Ask for a filter value and return the matching users."""
+
+    if option == "name":
+        value = input("Enter a name to filter users: ").strip()
+        return filter_by_name(users, value)
+
+    elif option == "age":
+        try:
+            value = int(input("Enter age to filter users: ").strip())
+        except ValueError:
+            print("Invalid age.")
+            return []
+        return filter_by_age(users, value)
+
+    elif option == "email":
+        value = input("Enter an email to filter users: ").strip()
+        return filter_by_email(users, value)
+
+    print("Filtering by that option is not supported.")
+    return []
+
+
+def main():
+    """Main entry point of the program."""
+
+    users = load_users()
+    option = input("What would you like to filter by? ").strip().lower()
+    result = get_filter_value_and_result(users, option)
+
+    if result:
+        for user in result:
+            print(user)
+    else:
+        print("No users found.")
 
 
 if __name__ == "__main__":
-    filter_option = input("What would you like to filter by? ").strip().lower()
-
-    if filter_option == "name":
-        name_to_search = input("Enter a name to filter users: ").strip()
-        filter_users_by_name(name_to_search)
-    if filter_option == "age":
-        age_to_search = int(input("Enter age to filter users: ").strip())
-        filter_users_by_age(age_to_search)
-    if filter_option == "email":
-        email_to_search = input("Enter an email to filter users: ").strip()
-        filter_users_by_email(email_to_search)
-    else:
-        print("Filtering by that option is not yet supported.")
-
+    main()
